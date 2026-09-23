@@ -1,3 +1,180 @@
-<html>
-<center>123prova</center>
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria - Faqja Ime</title>
+    <!-- Linku zyrtar i ikonave FontAwesome si te faqet e tjera -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        body, html {
+            margin: 0; padding: 0; width: 100%; min-height: 100vh;
+            font-family: Arial, sans-serif; background-color: #000;
+            color: #fff; -webkit-user-select: none; user-select: none;
+        }
+        
+        /* Mundëson që faqja të bëjë scroll nëse ka shumë foto */
+        .wrapper {
+            padding: 40px 20px 120px 20px; /* Hapësirë në fund që të mos bllokohet nga menua */
+            max-width: 1200px; margin: 0 auto; text-align: center;
+        }
+
+        h1 { color: #00aaff; margin-bottom: 10px; }
+        p.subtitle { color: #ccc; font-size: 16px; margin-bottom: 40px; }
+
+        /* Rrjeta e Galerisë Moderne */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; padding: 10px;
+        }
+
+        /* Kutia e çdo fotoje */
+        .gallery-item {
+            position: relative; overflow: hidden; border-radius: 12px;
+            aspect-ratio: 4 / 3; background-color: #111;
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;
+        }
+
+        .gallery-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s ease; pointer-events: auto;
+            -webkit-user-drag: none; user-drag: none;
+        }
+
+        /* Efekti Hover mbi foto */
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            border-color: #00aaff;
+            box-shadow: 0 8px 25px rgba(0, 170, 255, 0.4);
+        }
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        /* Menuja e Poshtme Naviguese (Identike si te faqet e tjera) */
+        .horizontal-icon-nav {
+            position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%);
+            z-index: 100; background: rgba(0, 0, 0, 0.65); padding: 10px 20px;
+            border-radius: 40px; backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex; gap: 20px;
+        }
+        .horizontal-icon-nav a {
+            color: #888; font-size: 20px; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; text-decoration: none; transition: all 0.3s ease; position: relative;
+        }
+        .horizontal-icon-nav a:hover, .horizontal-icon-nav a.active {
+            color: #fff; background-color: #00aaff; transform: scale(1.15) translateY(-5px);
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.6);
+        }
+        .horizontal-icon-nav a::after {
+            content: attr(data-tooltip); position: absolute; bottom: 60px; left: 50%;
+            transform: translateX(-50%) translateY(10px); background: rgba(0, 0, 0, 0.85);
+            color: #fff; padding: 5px 12px; border-radius: 6px; font-size: 13px;
+            white-space: nowrap; opacity: 0; pointer-events: none; transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .horizontal-icon-nav a:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .external-copyright {
+            position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+            z-index: 90; color: rgba(255, 255, 255, 0.45); font-size: 11px;
+            text-align: center; white-space: nowrap; pointer-events: none; letter-spacing: 0.5px;
+        }
+
+        /* LIGHTBOX: Dritarja që zmadhon foton kur klikohet */
+        .lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .lightbox.active {
+            opacity: 1; pointer-events: auto;
+        }
+        .lightbox-img {
+            max-width: 85%; max-height: 80%; border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .lightbox.active .lightbox-img {
+            transform: scale(1);
+        }
+        .lightbox-close {
+            position: absolute; top: 25px; right: 35px; color: #fff;
+            font-size: 35px; font-weight: bold; cursor: pointer; transition: color 0.2s;
+        }
+        .lightbox-close:hover { color: #00aaff; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <h1>Galeria Ime</h1>
+        <p class="subtitle">Disa nga punët dhe fotot tona më të mira të organizuara në mënyrë moderne.</p>
+
+        <!-- Seksioni ku vendosen fotot -->
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="openLightbox('foto1.jpg')">
+                <img src="foto1.jpg" alt="Foto 1">
+            </div>
+            <div class="gallery-item" onclick="openLightbox('foto2.jpg')">
+                <img src="foto2.jpg" alt="Foto 2">
+            </div>
+            <div class="gallery-item" onclick="openLightbox('foto3.jpg')">
+                <img src="foto3.jpg" alt="Foto 3">
+            </div>
+            <div class="gallery-item" onclick="openLightbox('foto4.jpg')">
+                <img src="foto4.jpg" alt="Foto 4">
+            </div>
+            <div class="gallery-item" onclick="openLightbox('foto5.jpg')">
+                <img src="foto5.jpg" alt="Foto 5">
+            </div>
+            <div class="gallery-item" onclick="openLightbox('foto6.jpg')">
+                <img src="foto6.jpg" alt="Foto 6">
+            </div>
+        </div>
+    </div>
+
+    <!-- Menua juaj zyrtare me ikona -->
+    <nav class="horizontal-icon-nav">
+        <a href="index.html" data-tooltip="Kreu"><i class="fa-solid fa-house"></i></a>
+        <a href="rreth-nesh.html" data-tooltip="Rreth Nesh"><i class="fa-solid fa-user"></i></a>
+        <a href="sherbimet.html" data-tooltip="Shërbimet"><i class="fa-solid fa-gear"></i></a>
+        <a href="kontakt.html" data-tooltip="Kontakt"><i class="fa-solid fa-envelope"></i></a>
+    </nav>
+
+    <div class="external-copyright">Design by K.B. © 2026 Të gjitha të drejtat e rezervuara.</div>
+
+    <!-- Dritarja Lightbox (Fshehur fillimisht) -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="Zmadhim">
+    </div>
+
+    <script>
+        // Mbrojtja e kodit (Identike si te faqja Kontakt dhe Index)
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's'))) e.preventDefault();
+        });
+
+        // Logjika e Lightbox-it per zmadhimin e fotove
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+        }
+    </script>
+</body>
 </html>
